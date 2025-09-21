@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.*;
 
 public class PlacementScheduler {
-    private static final int TICKS_PER_PLACE = 2;     // 每 2 tick 摆一个
+    private static final int TICKS_PER_PLACE = 2;     // 每 2 tick
     private static final int HARD_LIMIT = 256;        // 安全上限
 
     private static final Map<ServerLevel, Deque<PlaceJob>> QUEUES = new WeakHashMap<>();
@@ -87,7 +87,6 @@ public class PlacementScheduler {
                     be.setOwner(ob.getOwnerUuid(), ob.getOwnerName());
                     // 建立树关系（用 ID，不是坐标）
                     be.setParentId(ob.getNodeId());
-                    // 注册位置（onLoad 也会做，但此处立即更新更稳）
                     com.petitioner0.filecraft.util.FileGraphManager.get(level)
                         .registerOrUpdate(be.getNodeId(), ob.getNodeId(), level, p);
                 }

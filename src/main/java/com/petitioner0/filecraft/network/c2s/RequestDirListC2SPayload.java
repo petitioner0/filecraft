@@ -22,7 +22,7 @@ public record RequestDirListC2SPayload(
     public static final Type<RequestDirListC2SPayload> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(Filecraft.MODID, "request_dir_list"));
 
-    // 用 STRING_UTF8 映射出 UUID 的 StreamCodec（1.21.8 通用写法）
+    // 用 STRING_UTF8 映射出 UUID 的 StreamCodec
     private static final StreamCodec<ByteBuf, UUID> UUID_STREAM_CODEC =
             ByteBufCodecs.STRING_UTF8.map(UUID::fromString, UUID::toString);
 

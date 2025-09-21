@@ -27,10 +27,10 @@ public class FileNodeBlockEntity extends BlockEntity {
     private Direction expandDir = Direction.NORTH;
     private BlockPos parent = null;
 
-    // 渲染文字的朝向缓存（优先：上→东→南→西→北→下）
+    // 渲染文字的朝向缓存（上→东→南→西→北→下）
     private Direction labelDir = Direction.UP;
 
-    // 新增：所有者标记（可选功能）
+    
     private java.util.UUID ownerUuid = null;
     private String ownerName = "";
 
@@ -50,7 +50,7 @@ public class FileNodeBlockEntity extends BlockEntity {
         if (currentLevel != null && !currentLevel.isClientSide) {
             currentLevel.setBlock(getBlockPos(),
                 getBlockState().setValue(FileNodeBlock.KIND, FileKind.fromExtension(ext(path), isDir)),
-                Block.UPDATE_ALL); // 或保留你原来的 3
+                Block.UPDATE_ALL);
             recomputeLabelDir();
             sync();
         }
@@ -89,7 +89,7 @@ public class FileNodeBlockEntity extends BlockEntity {
         return labelDir;
     }
 
-    /** 选择相邻空气方向：UP→EAST→SOUTH→WEST→NORTH→DOWN */
+    
     public void recomputeLabelDir() {
         Level currentLevel = this.level;
         if (currentLevel == null) return;
@@ -134,7 +134,7 @@ public class FileNodeBlockEntity extends BlockEntity {
         }
     }
 
-    // 方块加载到世界（含从存档读取后）时，刷新一次索引
+    // 方块加载到世界时，刷新一次索引
     @Override
     public void onLoad() {
         super.onLoad();
@@ -151,10 +151,10 @@ public class FileNodeBlockEntity extends BlockEntity {
         super.setRemoved();
     }
 
-    // 如果你将来支持"移动节点"，在坐标发生变化完成后，记得调用：
+    // 将来支持"移动节点"，在坐标发生变化完成后调用：
     public void notifyMoved() { registerOrUpdateIndex(); }
 
-    // 收回改为"按索引递归"，不再扫描
+    
     public void collapse(Level level) {
         if (!(level instanceof net.minecraft.server.level.ServerLevel sl) || level.isClientSide) return;
 
@@ -162,16 +162,16 @@ public class FileNodeBlockEntity extends BlockEntity {
         com.petitioner0.filecraft.util.PlacementScheduler.cancelByParent(sl, worldPosition);
 
         var graph = com.petitioner0.filecraft.util.FileGraphManager.get(sl);
-        // 后序遍历返回从"最深后代 → … → 直接子"的顺序位置（不包括自己）
+        // 后序遍历返回顺序位置（不包括自己）
         java.util.List<com.petitioner0.filecraft.util.FileGraphManager.NodeLoc> order =
                 graph.getDescendantsPostOrder(this.nodeId);
 
-        // 依次删除（确保先删子孙，再删直系，但不删除自己）
+        // 依次删除
         for (var loc : order) {
             if (loc.levelKey().equals(sl.dimension())) {
                 var be = sl.getBlockEntity(loc.pos());
                 if (be instanceof FileNodeBlockEntity child) {
-                    // 递归取消它下面的放置任务（谨慎起见）
+                    // 递归取消它下面的放置任务
                     com.petitioner0.filecraft.util.PlacementScheduler.cancelByParent(sl, child.getBlockPos());
                 }
                 sl.removeBlock(loc.pos(), false);
@@ -217,33 +217,33 @@ public class FileNodeBlockEntity extends BlockEntity {
         } catch (Exception e) { this.parentId = null; }
     }
 
-    // —— 1) 区块加载时的同步：返回更新标签
+    
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        // 1.21.8 推荐直接用 saveWithoutMetadata / 或者自己组装 NBT
+        
         return this.saveWithoutMetadata(registries);
     }
 
-    // 收到更新标签（默认会转到 loadWithComponents → 调你上面的 loadAdditional）
+    
     @Override
     public void handleUpdateTag(@NonNull ValueInput input) {
         super.handleUpdateTag(input);
     }
 
-    // —— 2) 方块更新时的同步：返回数据包
+    
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
-        // 使用 getUpdateTag 的内容
+        
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    // 客户端收到数据包（默认也会把数据流到 loadWithComponents / loadAdditional）
+    
     @Override
     public void onDataPacket(@NonNull Connection connection, @NonNull ValueInput input) {
         super.onDataPacket(connection, input);
     }
 
-    // —— 工具：标脏并同步给客户端（记得服务端调用）
+    
     private void sync() {
         setChanged();
         Level currentLevel = this.level;

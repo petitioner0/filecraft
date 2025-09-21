@@ -13,13 +13,13 @@ public class FilecraftBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Filecraft.MODID);
 
-    // 推荐：用 Supplier，而不是显式的 DeferredHolder 泛型
+    
     public static final Supplier<BlockEntityType<FileNodeBlockEntity>> FILE_NODE =
             BLOCK_ENTITY_TYPES.register("file_node",
                     () -> new BlockEntityType<>(
-                            FileNodeBlockEntity::new, // 工厂
-                            false,                    // 仅 OP 才能从 NBT 放置，通常为 false
-                            FilecraftBlocks.FILE_NODE.get() // 关联的方块
+                            FileNodeBlockEntity::new, 
+                            false,                    
+                            FilecraftBlocks.FILE_NODE.get() 
                     )
             );
 

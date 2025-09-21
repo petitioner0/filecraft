@@ -40,7 +40,7 @@ public class FileNodeBlock extends Block implements EntityBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
             Player player, BlockHitResult hit) {
-        // 空手时没有 hand 参数，这里当作主手传入
+        
         return handleUse(state, level, pos, player, InteractionHand.MAIN_HAND, hit);
     }
 
@@ -71,7 +71,7 @@ public class FileNodeBlock extends Block implements EntityBlock {
                 node.setOwner(target.getUUID(), target.getGameProfile().getName());
             }
 
-            boolean removeSelf = player.isShiftKeyDown(); // ← 按住Shift则尝试删除自己
+            boolean removeSelf = player.isShiftKeyDown(); //按住Shift则尝试删除自己
 
             var graph = com.petitioner0.filecraft.util.FileGraphManager
                     .get((net.minecraft.server.level.ServerLevel) level);
@@ -82,16 +82,16 @@ public class FileNodeBlock extends Block implements EntityBlock {
                     "Node ID: {}, Children count: {}, Is expanded: {}, Shift: {}",
                     node.getNodeId(), children.size(), isExpanded, removeSelf);
 
-            // === 删除自己（仅限所有者） ===
+            // === 删除自己===
             if (removeSelf) {
 
-                // 1) 回收子节点（collapse 只清子树，不删自己）
+                // 1) 回收子节点
                 node.collapse(level);
 
-                // 2) 注销并移除自己（加双重保险）
+                // 2) 注销并移除自己
                 graph.unregister(node.getNodeId());
                 if (level instanceof net.minecraft.server.level.ServerLevel sl) {
-                    // 仅当当前位置的方块实体还是这个节点时才移除，避免误删
+                    
                     if (sl.getBlockEntity(pos) == be) {
                         sl.removeBlock(pos, /* isMoving */ false);
                     }
@@ -110,7 +110,7 @@ public class FileNodeBlock extends Block implements EntityBlock {
                     player.displayClientMessage(Component.translatable("message.filecraft.directory_collapsed"), true);
                 }
             } else {
-                // 请求对"目标玩家"展开（保持你原有的跨端交互）
+                // 请求对"目标玩家"展开
                 FilecraftNetwork.sendToPlayer(target, new RequestDirListC2SPayload(
                         pos, face, node.getPath(), node.isDirectory(), node.getNodeId()));
                 if (!player.getUUID().equals(target.getUUID())) {
@@ -126,12 +126,12 @@ public class FileNodeBlock extends Block implements EntityBlock {
                 return InteractionResult.CONSUME;
             }
 
-            // 仅对在线的自身客户端发包（已经在服务端）
+            // 仅对在线的自身客户端发包
             if (!(player instanceof net.minecraft.server.level.ServerPlayer sp)) {
                 return InteractionResult.CONSUME;
             }
 
-            // 保险：如果这个节点被标记为目录，就不处理
+            // 如果这个节点被标记为目录，就不处理
             if (node.isDirectory()) {
                 player.displayClientMessage(Component.translatable("message.filecraft.cannot_open_directory"), true);
                 return InteractionResult.CONSUME;

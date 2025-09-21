@@ -33,7 +33,7 @@ public class FileGraphManager {
         // 更新父子关系
         java.util.UUID oldParent = parentOf.get(nodeId);
         if (!Objects.equals(oldParent, parentId)) {
-            // 从老父亲移除
+            
             if (oldParent != null) {
                 var set = childrenOf.get(oldParent);
                 if (set != null) set.remove(nodeId);
@@ -56,16 +56,16 @@ public class FileGraphManager {
     }
 
     public synchronized void unregister(java.util.UUID nodeId) {
-        // 从父亲的孩子表移除
+        
         var parent = parentOf.remove(nodeId);
         if (parent != null) {
             var set = childrenOf.get(parent);
             if (set != null) set.remove(nodeId);
         }
-        // 把它的所有孩子“提升为孤儿”（或一并清理，按需）
+       
         var kids = childrenOf.remove(nodeId);
         if (kids != null) {
-            for (var k : kids) parentOf.remove(k); // 断开父指针；是否进一步删除看你的策略
+            for (var k : kids) parentOf.remove(k); 
         }
         nodeLocs.remove(nodeId);
     }
@@ -78,7 +78,7 @@ public class FileGraphManager {
         return result;
     }
 
-    // —— 后序遍历返回所有后代的 NodeLoc（深度优先，子孙在前，不包含自己）
+    // —— 后序遍历返回所有后代的 NodeLoc（深度优先，不包含自己）
     public synchronized java.util.List<NodeLoc> getDescendantsPostOrder(java.util.UUID root) {
         java.util.List<NodeLoc> out = new ArrayList<>();
         dfsChildren(root, out);

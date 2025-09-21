@@ -19,7 +19,7 @@ public class SystemPathUtil {
     }
 
     /**
-     * 获取系统的第一个根目录显示名（更友好，比如 Windows 下显示“本地磁盘 (C:)”）
+     * 获取系统的第一个根目录显示名
      * @return 显示名，如果没有则返回 null
      */
     public static String getFirstRootDisplayName() {

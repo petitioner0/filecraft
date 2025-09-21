@@ -13,11 +13,9 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 @Mod(value = Filecraft.MODID, dist = Dist.CLIENT)
-// You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
 @EventBusSubscriber(modid = Filecraft.MODID, value = Dist.CLIENT)
 public final class FilecraftClient {
     public FilecraftClient(ModContainer container) {
-        // 官方推荐：在客户端入口里注册配置界面扩展点
         container.registerExtensionPoint(
             IConfigScreenFactory.class, ConfigurationScreen::new
         );

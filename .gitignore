@@ -2,8 +2,6 @@
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 # IntelliJ IDEA
 .idea/
@@ -11,8 +9,6 @@ build/
 *.iml
 *.ipr
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
 
 # Eclipse
 .apt_generated
@@ -23,8 +19,6 @@ out/
 .springBeans
 .sts4-cache
 bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
 # VS Code
 .vscode/
@@ -44,12 +38,14 @@ crash-reports/
 screenshots/
 saves/
 resourcepacks/
-mods/
+mods/*.jar
 config/
-defaultconfigs/
 usercache.json
 usernamecache.json
 session.lock
+
+# If your mod ships default configs, uncomment this:
+# !defaultconfigs/
 
 # NeoForm
 neoform/

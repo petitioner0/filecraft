@@ -21,12 +21,12 @@ public final class FilecraftNetwork {
 
     public static final String PROTOCOL = "1";
 
-    /** 公共端注册（两端都会跑到）：声明消息类型 + 编解码 + 方向 */
+    /** 公共端注册：声明消息类型 + 编解码 + 方向 */
     @SubscribeEvent
     public static void registerCommon(final RegisterPayloadHandlersEvent event) {
         PayloadRegistrar reg = event.registrar(PROTOCOL);
 
-        // 【服务端 -> 客户端】请求客户端去列目录（你原来的注释逻辑）
+        // 【服务端 -> 客户端】请求客户端去列目录
         reg.playToClient(
                 RequestDirListC2SPayload.TYPE,
                 RequestDirListC2SPayload.STREAM_CODEC);
@@ -41,13 +41,13 @@ public final class FilecraftNetwork {
                 DirListS2CPayload.TYPE,
                 DirListS2CPayload.STREAM_CODEC,
                 (payload, ctx) -> {
-                    // == 这里等价于你原来 DirListS2CPacket.handle(...) 的服务端逻辑 ==
+                    
                     ServerPlayer sp = (ServerPlayer) ctx.player();
                     if (sp == null)
                         return;
                     ServerLevel level = sp.level();
 
-                    // 调度批量放置（你的原逻辑）
+                    // 调度批量放置
                     com.petitioner0.filecraft.util.PlacementScheduler.enqueue(
                             level,
                             new com.petitioner0.filecraft.util.PlacementScheduler.PlaceJob(
@@ -68,7 +68,7 @@ public final class FilecraftNetwork {
             event.register(
                     RequestDirListC2SPayload.TYPE,
                     (payload, ctx) -> {
-                        // 直接使用包里的真实信息，避免读取客户端 BE 的 path
+                        // 直接使用包里的真实信息
                         String basePath = payload.path();
                         boolean isDir = payload.isDir();
 
@@ -80,7 +80,7 @@ public final class FilecraftNetwork {
                                         e.name(), e.isDir(), e.absolutePath(), e.ext()))
                                 .toList();
 
-                        // 回传给服务端（origin/face 仍用原包里的）
+                        // 回传给服务端
                         FilecraftNetwork.sendToServer(
                                 new DirListS2CPayload(payload.nodePos(), payload.face(), list));
                     });
@@ -89,7 +89,7 @@ public final class FilecraftNetwork {
                 RequestOpenFileC2SPayload.TYPE,
                 (payload, ctx) -> {
                     String path = payload.path();
-                    // 在主线程执行，避免与渲染/网络线程打架
+                    // 在主线程执行
                     net.minecraft.client.Minecraft.getInstance().execute(() -> {
                         boolean ok = false;
                         try {
