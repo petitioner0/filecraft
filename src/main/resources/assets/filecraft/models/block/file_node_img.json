@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+    "up": "filecraft:block/file_node/topbottom",
+    "down": "filecraft:block/file_node/topbottom",
+    "north": "filecraft:block/file_node/img",
+    "south": "filecraft:block/file_node/img",
+    "east": "filecraft:block/file_node/img",
+    "west": "filecraft:block/file_node/img",
+    "particle": "filecraft:block/file_node/img"
+  }
+  }
