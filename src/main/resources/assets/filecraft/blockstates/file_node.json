@@ -1,0 +1,17 @@
+{
+    "variants": {
+      "kind=folder": { "model": "filecraft:block/file_node_folder" },
+      "kind=txt":    { "model": "filecraft:block/file_node_txt" },
+      "kind=png":    { "model": "filecraft:block/file_node_img" },
+      "kind=pdf":    { "model": "filecraft:block/file_node_pdf" },
+      "kind=jpg":    { "model": "filecraft:block/file_node_img" },
+      "kind=jpeg":   { "model": "filecraft:block/file_node_img" },
+      "kind=gif":    { "model": "filecraft:block/file_node_img" },
+      "kind=mp3":    { "model": "filecraft:block/file_node_audio" },
+      "kind=ogg":    { "model": "filecraft:block/file_node_audio" },
+      "kind=mp4":    { "model": "filecraft:block/file_node_video" },
+      "kind=json":   { "model": "filecraft:block/file_node_txt" },
+      "kind=xml":    { "model": "filecraft:block/file_node_txt" },
+      "kind=other":  { "model": "filecraft:block/file_node_other" }
+    }
+  }

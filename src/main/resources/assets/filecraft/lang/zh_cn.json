@@ -1,0 +1,13 @@
+{
+    "block.filecraft.file_node": "文件节点",
+    "message.filecraft.owner_offline": "所有者不在线，无法操作。",
+    "message.filecraft.directory_recycled": "已回收并删除该目录。",
+    "message.filecraft.requested_owner_collapse": "已请求所有者 %s 回收该目录。",
+    "message.filecraft.directory_collapsed": "已回收目录。",
+    "message.filecraft.requested_owner_expand": "已请求所有者 %s 展开该目录。",
+    "message.filecraft.owner_only_open": "只有所有者可以在本机打开该文件。",
+    "message.filecraft.cannot_open_directory": "这是一个目录，无法直接打开。",
+    "message.filecraft.file_open_requested": "已请求在你的电脑上打开该文件。",
+    "message.filecraft.file_open_success": "已请求打开文件：%s",
+    "message.filecraft.file_open_failed": "无法在本机打开文件：%s"
+}
