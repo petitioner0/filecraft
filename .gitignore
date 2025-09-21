@@ -19,6 +19,8 @@ out/
 .springBeans
 .sts4-cache
 bin/
+*.launch
+.metadata
 
 # VS Code
 .vscode/
@@ -62,25 +64,8 @@ build/neoform/
 *.backup
 *_old
 
-# eclipse 
-bin 
-*.launch 
-.settings 
-.metadata 
-.classpath 
-.project 
-# idea 
-out 
-*.ipr 
-*.iws 
-*.iml 
-.idea 
-# gradle 
-build
-.gradle 
-# other 
-eclipse 
-run 
-runs 
-run-data 
-repo
+# Other
+eclipse/
+run/
+run-data/
+repo/
