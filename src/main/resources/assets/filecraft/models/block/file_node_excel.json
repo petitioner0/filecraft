@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+    "up": "filecraft:block/file_node/topbottom",
+    "down": "filecraft:block/file_node/topbottom",
+    "north": "filecraft:block/file_node/excel",
+    "south": "filecraft:block/file_node/excel",
+    "east": "filecraft:block/file_node/excel",
+    "west": "filecraft:block/file_node/excel",
+    "particle": "filecraft:block/file_node/excel"
+  }
+  }
