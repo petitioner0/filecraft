@@ -9,5 +9,11 @@
     "message.filecraft.cannot_open_directory": "这是一个目录，无法直接打开。",
     "message.filecraft.file_open_requested": "已请求在你的电脑上打开该文件。",
     "message.filecraft.file_open_success": "已请求打开文件：%s",
-    "message.filecraft.file_open_failed": "无法在本机打开文件：%s"
+    "message.filecraft.file_open_failed": "无法在本机打开文件：%s",
+    "message.filecraft.owner_only_bind": "只有所有者可以绑定路径。",
+    "message.filecraft.bound_to_path": "已绑定到路径：%s",
+    "message.filecraft.path_picked": "已选择路径：%s",
+    "screen.filecraft.enter_path": "输入路径",
+    "screen.filecraft.path_box": "路径输入框",
+    "message.filecraft.path_not_exists": "路径不存在"
 }

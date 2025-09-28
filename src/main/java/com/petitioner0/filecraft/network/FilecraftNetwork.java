@@ -4,7 +4,9 @@ import com.petitioner0.filecraft.Filecraft;
 import com.petitioner0.filecraft.fsblock.FileNodeBlockEntity;
 import com.petitioner0.filecraft.network.c2s.RequestDirListC2SPayload;
 import com.petitioner0.filecraft.network.c2s.RequestOpenFileC2SPayload;
+import com.petitioner0.filecraft.network.c2s.RequestPickPathC2SPayload;
 import com.petitioner0.filecraft.network.s2c.DirListS2CPayload;
+import com.petitioner0.filecraft.network.s2c.PickedPathS2CPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
@@ -36,6 +38,11 @@ public final class FilecraftNetwork {
                 RequestOpenFileC2SPayload.TYPE,
                 RequestOpenFileC2SPayload.STREAM_CODEC);
 
+        // 【服务端 -> 客户端】请求选择路径
+        reg.playToClient(
+                RequestPickPathC2SPayload.TYPE,
+                RequestPickPathC2SPayload.STREAM_CODEC);
+
         // 【客户端 -> 服务端】客户端把列出的目录回传给服务器
         reg.playToServer(
                 DirListS2CPayload.TYPE,
@@ -57,6 +64,38 @@ public final class FilecraftNetwork {
                     if (level.getBlockEntity(payload.origin()) instanceof FileNodeBlockEntity originBe) {
                         originBe.setExpandDir(payload.face());
                     }
+                });
+
+        // 【客户端 -> 服务端】回传已选择的路径
+        reg.playToServer(
+                PickedPathS2CPayload.TYPE,
+                PickedPathS2CPayload.STREAM_CODEC,
+                (payload, ctx) -> {
+                    var sp = (ServerPlayer) ctx.player();
+                    if (sp == null) return;
+                    var level = sp.level();
+                    var be = level.getBlockEntity(payload.nodePos());
+                    if (!(be instanceof com.petitioner0.filecraft.fsblock.FileNodeBlockEntity node)) return;
+
+                    // 仅允许所有者或未绑定的节点
+                    var owner = node.getOwnerUuid();
+                    if (owner != null && !owner.equals(sp.getUUID())) {
+                        sp.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.filecraft.owner_only_bind"), true);
+                        return;
+                    }
+                    if (owner == null) node.setOwner(sp.getUUID(), sp.getGameProfile().getName());
+
+                    // 替换为新路径（先回收子节点，避免残留）
+                    node.collapse(level);
+
+                    node.setParent(null);
+                    node.setParentId(null);
+                    node.setPath(payload.path(), payload.isDir());
+
+                    sp.displayClientMessage(
+                        net.minecraft.network.chat.Component.translatable("message.filecraft.bound_to_path", node.getName()),
+                        true
+                    );
                 });
     }
 
@@ -135,6 +174,35 @@ public final class FilecraftNetwork {
                     });
                 }
             );
+
+            event.register(
+                com.petitioner0.filecraft.network.c2s.RequestPickPathC2SPayload.TYPE,
+                (payload, ctx) -> {
+                    var mc = net.minecraft.client.Minecraft.getInstance();
+                    mc.execute(() -> mc.setScreen(new com.petitioner0.filecraft.client.ui.PathInputScreen(
+                        net.minecraft.network.chat.Component.translatable("screen.filecraft.enter_path"),
+                        (String text) -> {
+                            java.io.File f = new java.io.File(text);
+                            if (!f.exists()) {
+                                if (mc.player != null) mc.player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.filecraft.path_not_exists"), true);
+                                return;
+                            }
+                            boolean isDir = f.isDirectory();
+                            com.petitioner0.filecraft.network.FilecraftNetwork.sendToServer(
+                                new com.petitioner0.filecraft.network.s2c.PickedPathS2CPayload(
+                                    payload.nodePos(), f.getAbsolutePath(), isDir
+                                )
+                            );
+                            if (mc.player != null) {
+                                mc.player.displayClientMessage(
+                                    net.minecraft.network.chat.Component.translatable("message.filecraft.path_picked", f.getAbsolutePath()),
+                                    true
+                                );
+                            }
+                        }
+                    )));
+                }
+            );
         }
     }
 
@@ -150,8 +218,18 @@ public final class FilecraftNetwork {
         PacketDistributor.sendToPlayer(player, msg);
     }
 
+    // 服务器 -> 客户端：让某个玩家客户端选择路径
+    public static void sendToPlayer(ServerPlayer player, RequestPickPathC2SPayload msg) {
+        PacketDistributor.sendToPlayer(player, msg);
+    }
+
     // 客户端 -> 服务器：把客户端列出来的目录回传
     public static void sendToServer(DirListS2CPayload msg) {
+        ClientPacketDistributor.sendToServer(msg);
+    }
+
+    // 客户端 -> 服务器：回传已选择的路径
+    public static void sendToServer(PickedPathS2CPayload msg) {
         ClientPacketDistributor.sendToServer(msg);
     }
 }
