@@ -14,8 +14,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
-import javax.annotation.Nonnull;
 
 public class PathBinderItem extends Item implements net.neoforged.neoforge.common.extensions.IItemExtension {
     public PathBinderItem(Properties props) { super(props); }

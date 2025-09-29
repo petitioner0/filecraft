@@ -15,5 +15,7 @@
   "message.filecraft.path_picked": "Path selected: %s",
   "screen.filecraft.enter_path": "Enter Path",
   "screen.filecraft.path_box": "Path Input Box",
-  "message.filecraft.path_not_exists": "Path does not exist"
+  "message.filecraft.path_not_exists": "Path does not exist",
+  "item.filecraft.path_binder": "Path Binder",
+  "itemGroup.filecraft.filecraft": "Filecraft"
 }

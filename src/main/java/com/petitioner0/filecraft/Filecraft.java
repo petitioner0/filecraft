@@ -20,6 +20,7 @@ public class Filecraft {
         FilecraftBlocks.ITEMS.register(modEventBus);
         FilecraftItems.ITEMS.register(modEventBus);
         FilecraftBlockEntities.register(modEventBus);
+        ModCreativeTabs.init(modEventBus);
 
     }
 

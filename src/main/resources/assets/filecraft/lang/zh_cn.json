@@ -15,5 +15,7 @@
     "message.filecraft.path_picked": "已选择路径：%s",
     "screen.filecraft.enter_path": "输入路径",
     "screen.filecraft.path_box": "路径输入框",
-    "message.filecraft.path_not_exists": "路径不存在"
+    "message.filecraft.path_not_exists": "路径不存在",
+    "item.filecraft.path_binder": "路径绑定器",
+    "itemGroup.filecraft.filecraft": "Filecraft"
 }
