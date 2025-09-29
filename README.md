@@ -61,3 +61,16 @@ This project is licensed under the MIT License - see the [LICENSE](MIT_LICENSE.t
 - Please comply with local laws and regulations and Minecraft's terms of use when using this mod
 
 **Enjoy managing your file system in Minecraft!**
+
+## Change log
+
+1.0.1
+
+*   Added recognition for a large number of new file extensions
+*   Created unique textures for executables, Word, Excel, and PowerPoint files
+*   Extended file type identification system
+
+1.0.2
+
+*   add a tool to set the path directly on the node.
+*   add creative tab to contain the item and block.
