@@ -1,12 +1,17 @@
 package com.petitioner0.filecraft.network;
 
 import com.petitioner0.filecraft.Filecraft;
+import com.petitioner0.filecraft.client.ui.PathInputScreen;
 import com.petitioner0.filecraft.fsblock.FileNodeBlockEntity;
 import com.petitioner0.filecraft.network.c2s.RequestDirListC2SPayload;
 import com.petitioner0.filecraft.network.c2s.RequestOpenFileC2SPayload;
 import com.petitioner0.filecraft.network.c2s.RequestPickPathC2SPayload;
 import com.petitioner0.filecraft.network.s2c.DirListS2CPayload;
 import com.petitioner0.filecraft.network.s2c.PickedPathS2CPayload;
+import com.petitioner0.filecraft.util.FileLister;
+import com.petitioner0.filecraft.util.PlacementScheduler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
@@ -17,6 +22,11 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+
+import java.awt.Desktop;
+import java.awt.GraphicsEnvironment;
+import java.io.File;
+import java.util.List;
 
 @EventBusSubscriber(modid = Filecraft.MODID)
 public final class FilecraftNetwork {
@@ -55,9 +65,9 @@ public final class FilecraftNetwork {
                     ServerLevel level = sp.level();
 
                     // 调度批量放置
-                    com.petitioner0.filecraft.util.PlacementScheduler.enqueue(
+                    PlacementScheduler.enqueue(
                             level,
-                            new com.petitioner0.filecraft.util.PlacementScheduler.PlaceJob(
+                            new PlacementScheduler.PlaceJob(
                                     payload.origin(), payload.face(), payload.entries()));
 
                     // 记录 origin 的展开方向
@@ -75,12 +85,12 @@ public final class FilecraftNetwork {
                     if (sp == null) return;
                     var level = sp.level();
                     var be = level.getBlockEntity(payload.nodePos());
-                    if (!(be instanceof com.petitioner0.filecraft.fsblock.FileNodeBlockEntity node)) return;
+                    if (!(be instanceof FileNodeBlockEntity node)) return;
 
                     // 仅允许所有者或未绑定的节点
                     var owner = node.getOwnerUuid();
                     if (owner != null && !owner.equals(sp.getUUID())) {
-                        sp.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.filecraft.owner_only_bind"), true);
+                        sp.displayClientMessage(Component.translatable("message.filecraft.owner_only_bind"), true);
                         return;
                     }
                     if (owner == null) node.setOwner(sp.getUUID(), sp.getGameProfile().getName());
@@ -93,7 +103,7 @@ public final class FilecraftNetwork {
                     node.setPath(payload.path(), payload.isDir());
 
                     sp.displayClientMessage(
-                        net.minecraft.network.chat.Component.translatable("message.filecraft.bound_to_path", node.getName()),
+                        Component.translatable("message.filecraft.bound_to_path", node.getName()),
                         true
                     );
                 });
@@ -112,7 +122,7 @@ public final class FilecraftNetwork {
                         boolean isDir = payload.isDir();
 
                         // 列出子项（按路径）
-                        java.util.List<DirListS2CPayload.RequestEntry> list = com.petitioner0.filecraft.util.FileLister
+                        List<DirListS2CPayload.RequestEntry> list = FileLister
                                 .list(basePath, isDir)
                                 .stream()
                                 .map(e -> DirListS2CPayload.RequestEntry.of(
@@ -129,19 +139,19 @@ public final class FilecraftNetwork {
                 (payload, ctx) -> {
                     String path = payload.path();
                     // 在主线程执行
-                    net.minecraft.client.Minecraft.getInstance().execute(() -> {
+                    Minecraft.getInstance().execute(() -> {
                         boolean ok = false;
                         try {
-                            if (!java.awt.GraphicsEnvironment.isHeadless()
-                                    && java.awt.Desktop.isDesktopSupported()) {
-                                java.awt.Desktop desk = java.awt.Desktop.getDesktop();
-                                if (desk.isSupported(java.awt.Desktop.Action.OPEN)) {
-                                    desk.open(new java.io.File(path));
+                            if (!GraphicsEnvironment.isHeadless()
+                                    && Desktop.isDesktopSupported()) {
+                                Desktop desk = Desktop.getDesktop();
+                                if (desk.isSupported(Desktop.Action.OPEN)) {
+                                    desk.open(new File(path));
                                     ok = true;
                                 }
                             }
                         } catch (Throwable t) {
-                            com.petitioner0.filecraft.Filecraft.LOGGER.warn("Desktop.open failed: {}", path, t);
+                            Filecraft.LOGGER.warn("Desktop.open failed: {}", path, t);
                         }
 
                         if (!ok) {
@@ -159,15 +169,15 @@ public final class FilecraftNetwork {
                                 pb.start();
                                 ok = true;
                             } catch (Throwable t2) {
-                                com.petitioner0.filecraft.Filecraft.LOGGER.warn("OS fallback open failed: {}", path, t2);
+                                Filecraft.LOGGER.warn("OS fallback open failed: {}", path, t2);
                             }
                         }
 
-                        var mc = net.minecraft.client.Minecraft.getInstance();
+                        var mc = Minecraft.getInstance();
                         if (mc.player != null) {
                             mc.player.displayClientMessage(
-                                ok ? net.minecraft.network.chat.Component.translatable("message.filecraft.file_open_success", path) 
-                                   : net.minecraft.network.chat.Component.translatable("message.filecraft.file_open_failed", path),
+                                ok ? Component.translatable("message.filecraft.file_open_success", path) 
+                                   : Component.translatable("message.filecraft.file_open_failed", path),
                                 true
                             );
                         }
@@ -176,26 +186,26 @@ public final class FilecraftNetwork {
             );
 
             event.register(
-                com.petitioner0.filecraft.network.c2s.RequestPickPathC2SPayload.TYPE,
+                RequestPickPathC2SPayload.TYPE,
                 (payload, ctx) -> {
-                    var mc = net.minecraft.client.Minecraft.getInstance();
-                    mc.execute(() -> mc.setScreen(new com.petitioner0.filecraft.client.ui.PathInputScreen(
-                        net.minecraft.network.chat.Component.translatable("screen.filecraft.enter_path"),
+                    var mc = Minecraft.getInstance();
+                    mc.execute(() -> mc.setScreen(new PathInputScreen(
+                        Component.translatable("screen.filecraft.enter_path"),
                         (String text) -> {
-                            java.io.File f = new java.io.File(text);
+                            File f = new File(text);
                             if (!f.exists()) {
-                                if (mc.player != null) mc.player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.filecraft.path_not_exists"), true);
+                                if (mc.player != null) mc.player.displayClientMessage(Component.translatable("message.filecraft.path_not_exists"), true);
                                 return;
                             }
                             boolean isDir = f.isDirectory();
-                            com.petitioner0.filecraft.network.FilecraftNetwork.sendToServer(
-                                new com.petitioner0.filecraft.network.s2c.PickedPathS2CPayload(
+                            FilecraftNetwork.sendToServer(
+                                new PickedPathS2CPayload(
                                     payload.nodePos(), f.getAbsolutePath(), isDir
                                 )
                             );
                             if (mc.player != null) {
                                 mc.player.displayClientMessage(
-                                    net.minecraft.network.chat.Component.translatable("message.filecraft.path_picked", f.getAbsolutePath()),
+                                    Component.translatable("message.filecraft.path_picked", f.getAbsolutePath()),
                                     true
                                 );
                             }
