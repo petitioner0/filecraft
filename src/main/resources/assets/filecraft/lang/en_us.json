@@ -17,5 +17,17 @@
   "screen.filecraft.path_box": "Path Input Box",
   "message.filecraft.path_not_exists": "Path does not exist",
   "item.filecraft.path_binder": "Path Binder",
+  "item.filecraft.file_mover": "File Mover",
+  "message.filecraft.owner_only_move": "Only the owner can move this node.",
+  "message.filecraft.node_picked_for_move": "Node picked for move. Click on a folder node to move it there.",
+  "message.filecraft.cannot_move_to_self": "Cannot move node to itself.",
+  "message.filecraft.target_must_be_folder": "Target must be a folder node.",
+  "message.filecraft.target_owner_mismatch": "Target folder must be owned by you.",
+  "message.filecraft.cannot_move_to_descendant": "Cannot move node to its descendant.",
+  "message.filecraft.source_file_not_exists": "Source file does not exist.",
+  "message.filecraft.target_dir_not_exists": "Target directory does not exist.",
+  "message.filecraft.target_file_exists": "Target file already exists: %s",
+  "message.filecraft.node_moved_success": "Node moved successfully: %s -> %s",
+  "message.filecraft.file_move_failed": "Failed to move file: %s",
   "itemGroup.filecraft.filecraft": "Filecraft"
 }

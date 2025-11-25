@@ -6,10 +6,6 @@ import java.io.File;
 
 public class SystemPathUtil {
 
-    /**
-     * 获取系统的第一个根目录路径
-     * @return 根目录路径字符串，如果没有则返回 null
-     */
     public static String getFirstRootPath() {
         File[] roots = File.listRoots();
         if (roots != null && roots.length > 0) {
@@ -18,10 +14,7 @@ public class SystemPathUtil {
         return null;
     }
 
-    /**
-     * 获取系统的第一个根目录显示名
-     * @return 显示名，如果没有则返回 null
-     */
+
     public static String getFirstRootDisplayName() {
         File[] roots = File.listRoots();
         if (roots != null && roots.length > 0) {

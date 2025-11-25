@@ -70,6 +70,11 @@ public class FileNodeBlockEntity extends BlockEntity {
     public String getOwnerName() { return ownerName; }
 
     public java.util.UUID getNodeId() { return nodeId; }
+    public void setNodeId(java.util.UUID id) {
+        this.nodeId = id;
+        sync();
+        registerOrUpdateIndex();
+    }
     public java.util.UUID getParentId() { return parentId; }
     public void setParentId(java.util.UUID pid) {
         this.parentId = pid;

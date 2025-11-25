@@ -21,6 +21,7 @@ public class ModCreativeTabs {
                 .icon(() -> new net.minecraft.world.item.ItemStack(FilecraftBlocks.FILE_NODE.get())) 
                 .displayItems((params, output) -> {
                     output.accept(FilecraftItems.PATH_BINDER.get());
+                    output.accept(FilecraftItems.FILE_MOVER.get());
                     output.accept(FilecraftBlocks.FILE_NODE.get()); 
                 })
                 .build()
